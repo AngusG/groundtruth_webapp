@@ -9,6 +9,9 @@ import numpy as np
 import random
 import json
 
+# Accept filepath via command line arg
+import argparse
+
 class MyEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, np.integer):
@@ -124,16 +127,17 @@ class PostProc:
 
 
 def test():
-    #filepath = "/home/mmccar04/Downloads/TestImages/raptor.jpg"
-    #filepath = "/home/lainey/code/rdash_Nov2/groundtruth_webapp/app/templates/static/images/Pressure08.jpg"
-    filepath = "/home/madison/Documents/41x/groundtruth_webapp/app/templates/static/images/wound_2.jpg"
-    im = cv2.imread(filepath)
-    newIm = cv2.imread(filepath)
+    #filepath = "/home/madison/Documents/41x/groundtruth_webapp/app/templates/static/images/wound_2.jpg"
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('filepath', help="Specify path to image to segment.",type=float)
+    args = parser.parse_args()
+
+    im = cv2.imread(args.filepath)
+    newIm = cv2.imread(args.filepath)
     postprocessor = PostProc(im)
     postprocessor.segment()
     #postprocessor.getContours()
-
-
 
 test()
 
