@@ -9,7 +9,7 @@ import numpy as np
 import random
 import json
 
-# Accept filepath via command line arg
+# For CLI version
 import argparse
 
 class MyEncoder(json.JSONEncoder):
@@ -26,9 +26,8 @@ class MyEncoder(json.JSONEncoder):
 class PostProc:
 
     def __init__(self, im):
-        self.im = im
 
-        #self.scale = 0.2
+        self.im = im
         self.scale = 1
         self.im_height, self.im_width, self.im_channels = self.im.shape
 
@@ -37,107 +36,48 @@ class PostProc:
         self.im_rgb = np.array(self.im)
 
 
-    def segment(self):
+    def segment(self, out_path, img_name, n_segments, sigma):
 
-	for i in range (1,5):
-		self.newIm = self.im;
+        self.newIm = self.im;
 
-        	numSegments = 200 + i*50
-        	# apply SLIC and extract (approximately) the supplied number of segments
-        	segments = slic(self.im, n_segments=numSegments, sigma=5)
+        seg_file = out_path+img_name+'n_seg'+str(n_segments)+'_sigma'+str(sigma)
 
-        	b = segments.tolist() # nested lists with same data, indices
-        	file_path = "file.json" ## your path variable
+        # apply SLIC and extract (approximately) the supplied number of segments
+        segments = slic(self.im, n_segments=n_segments, sigma=sigma)
 
-        	with open('segmentedImg.json', 'w') as outfile:
-            		json.dump(b, outfile, indent=2)
+        segments_list = segments.tolist() # nested lists with same data, indices
+        json_file = seg_file+'.json'
 
-        	# show the output of SLIC
-        	fig = plt.figure("Superpixels -- %d segments" % (numSegments))
-        	ax = fig.add_subplot(1, 1, 1)
-        	self.newIm = mark_boundaries(self.im, segments, color=(0, 0, 0)) # fn normalises img bw 1 and 0 apparently
-        	#ax.imshow(self.im)
-        	plt.axis("off")
-        	#cv2.waitKey(0)
+        with open(json_file, 'w') as f:
+                json.dump(segments_list, f, indent=2)
 
-        	self.newIm = (self.newIm * 255.0).astype('u1')
-        	cv2.imshow("after astype", self.newIm)
-        	cv2.imwrite("/home/madison/Documents/41x/groundtruth_webapp/app/segmentedImg.jpg", self.newIm)
-        	cv2.waitKey(0)
+        # show the output of SLIC
+        fig = plt.figure("Superpixels -- %d segments" % (n_segments))
+        ax = fig.add_subplot(1, 1, 1)
+        self.newIm = mark_boundaries(self.im, segments, color=(0, 0, 0)) # fn normalises img bw 1 and 0 apparently
+        plt.axis("off")
 
+        self.newIm = (self.newIm * 255.0).astype('u1')
+        cv2.imshow("Image with superpixel regions", self.newIm)
+        cv2.imwrite(seg_file+'.jpg', self.newIm)
+        cv2.waitKey(0)
 
-
-    def getContours(self):
-
-        # convert to greyscale
-        self.im = cv2.cvtColor( self.im, cv2.COLOR_RGB2GRAY )
-
-        # binary thresh and non-zero pixels to 1 if
-        thresh = 5
-        maxValue = 255
-        th, self.im = cv2.threshold(self.im, thresh, maxValue, cv2.THRESH_BINARY)
-        self.im = (255-self.im) # temp, invert
-        #cv2.imshow("after binary thresh", self.im)
-
-        im2, contours, hierarchy = cv2.findContours(self.im, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-        hierarchy = hierarchy[0] # for some reason, contours is a nice list and hierarchy is an ndarray with more dimensions that necessary
-
-        polyArrayArray = []
-        for index in range(len(contours)):
-            area = cv2.contourArea(contours[index])
-            #print "contour area: " + str(area)
-            thresh = self.im_width*0.15 # some way of deciding which pixel areas are noise
-            #print "contour thresh: "+ str(thresh)
-            if area < thresh:
-                continue
-            if hierarchy[index][2] != -1:
-                continue
-
-            cv2.drawContours(self.im_rgb, contours, index, (random.randrange(0, 255), random.randrange(0, 255), random.randrange(0, 255)), -1)
-            #with open('data.txt', 'w') as outfile:
-            #    json.dump(contours[index], outfile)
-            #print "hierarchy["+str(index)+"]: " + str(hierarchy[index])
-
-            contours = contours[index] # get contour
-            polyArray = []
-            tmp_scale = 0.4
-            for coords in contours:
-                #coords = coords[0] # discard unnecessary array if outside of this loop
-                xy_coords = coords[0]
-                #print xy_coords[0] # x
-                #print xy_coords[1] # y
-            
-                polyDict = dict([['xPosition', int(xy_coords[0]*tmp_scale)], ['yPosition', int(xy_coords[1]*tmp_scale)]])
-                polyArray.append(polyDict)
-            
-            polyArrayArray.append(polyArray)
-
-
-        #print polyArray
-
-        with open('polygon-new3.json', 'w') as outfile:
-         json.dump(polyArrayArray, outfile, indent=2)
-
-
-
-
-        #cv2.imshow("contour img", self.im_rgb)
-        #cv2.imshow("im2", im2)
-        #cv2.waitKey(0)
-
-
-def test():
-    #filepath = "/home/madison/Documents/41x/groundtruth_webapp/app/templates/static/images/wound_2.jpg"
+if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('filepath', help="Specify path to image to segment.",type=float)
+    parser.add_argument('img_path', help="path to image to segment")
+    parser.add_argument('img_name', help="name of image to segment, JPG assumed")
+    parser.add_argument('out_path', help="path to save segmented image")
+    parser.add_argument('--dsx', type=int, help="image downsampling ratio in x", default=1)
+    parser.add_argument('--dsy', type=int, help="image downsampling ratio in y", default=1)
+    parser.add_argument('--n_segments', type=int, help="number of segments to use with slic", default=100)
+    parser.add_argument('--sigma', type=int, help="width of gaussian smoothing", default=3)
     args = parser.parse_args()
 
-    im = cv2.imread(args.filepath)
-    newIm = cv2.imread(args.filepath)
+    img_file = args.img_path + args.img_name + ".JPG"
+
+    im = cv2.imread(img_file)[::args.dsy,::args.dsx]
+    newIm = cv2.imread(img_file)[::args.dsy,::args.dsx]
+
     postprocessor = PostProc(im)
-    postprocessor.segment()
-    #postprocessor.getContours()
-
-test()
-
+    postprocessor.segment(args.out_path,args.img_name,args.n_segments,args.sigma)
