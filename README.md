@@ -4,6 +4,9 @@
 ## Folder structure:
 
 ### Full Installation Instructions (Ubuntu 14.04)
+* 1. Install git
+* $sudo apt-get update
+* $sudo apt-get install git
 * 2. Clone Repository
 * git clone https://github.com/evegeris/groundtruth_webapp.git
 * 3. Get pip

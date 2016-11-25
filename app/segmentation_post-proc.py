@@ -28,6 +28,8 @@ class PostProc:
     def __init__(self, im):
 
         self.im = im
+
+        #self.scale = 0.2
         self.scale = 1
         self.im_height, self.im_width, self.im_channels = self.im.shape
 

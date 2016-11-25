@@ -96,7 +96,7 @@ angular.module('myApp.controllers').controller('LoginController', function($scop
 
               // { token: $scope.token }
               //$scope.token = $stateParams.token;
-              var user_entry = user.UserInfo.get({ email: $scope.email}, function() {
+              var user_entry = user.UserInfo.get({ email: $scope.email }, function() {
 
                 user_info.setFullName(user_entry.message.full_name);
                 var classified = user_entry.message.classified;
@@ -109,6 +109,8 @@ angular.module('myApp.controllers').controller('LoginController', function($scop
                 // get images assigned to user to display as table
                 //alert(user_entry.message.image_info[0].fullsize_orig_filepath);
                 user_info.setImageData(user_entry.message.image_info);
+
+                user_info.updateNextImageIndex();
 
               });
 

@@ -2,12 +2,21 @@ angular.module('myApp').controller('CropCtrl', function($http, $scope) {
 
   // Select the Image to preload!
   var loadedImage = new Image();
-  loadedImage.src = "static/images/segmentedImg.jpg";
+  //loadedImage.src = "static/images/segmentedImg.jpg";
+  loadedImage.src = "static/images/test_image_swift.jpg";
 
 
   $scope.myImage='';
   $scope.myCroppedImage='';
   $scope.cropType="circle";
+
+  // Listener to update the range slider when the mouse moves
+  $(document).mousemove(function(e){
+      var slider1 = document.getElementById("slider").value;
+      slider1 = slider1 - 2;
+
+      $('#slidePosition').html('Granularity: '+ slider1);
+  });
 
   $scope.setArea=function(value){
     $scope.cropType=value;
@@ -43,6 +52,6 @@ angular.module('myApp').controller('CropCtrl', function($http, $scope) {
 
     // Locally load the file
     loadedImage.onload = function() {
-        $scope.myImage='static/images/segmentedImg.jpg';
+        $scope.myImage='static/images/test_image_swift.jpg';
     }
   });
