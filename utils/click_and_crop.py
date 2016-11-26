@@ -31,7 +31,10 @@ if __name__ == '__main__':
     w=args.wnd
 
     input_file = args.img_path + args.img_name + ".JPG"
-    img = cv2.imread(input_file)[::args.ds,::args.ds,:].astype(np.uint8)
+    original = cv2.imread(input_file)[::args.ds,::args.ds,:].astype(np.uint8)
+
+    # make a copy of the image so that the bounding box is temporary
+    img=original.copy()
 
     cv2.namedWindow('image')
     cv2.setMouseCallback('image',crop_regions)
@@ -46,9 +49,9 @@ if __name__ == '__main__':
 
     i=0
     for x,y in crop_list:
-        roi = img[y-w:y+w,x-w:x+w,:]
+        roi = original[y-w:y+w,x-w:x+w,:]
         out_file = args.out_path+args.img_name+'_w'+str(w) \
-                +'_ds'+str(args.ds)+'_'+str(i)+"_.JPG"
+                +'_ds'+str(args.ds)+'_i'+str(i)+"_x"+str(x)+"_y"+str(y)+"_.JPG"
         cv2.imwrite(out_file,roi)
         i+=1
 
