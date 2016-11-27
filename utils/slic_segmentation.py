@@ -37,8 +37,6 @@ class PostProc:
         #cv2.imshow("input", self.im)
         self.im_rgb = np.array(self.im)
 
-
-<<<<<<< HEAD
     def segment(self, out_path, img_name, n_segments, sigma):
 
         self.newIm = self.im;
@@ -66,75 +64,6 @@ class PostProc:
         cv2.waitKey(0)
 
 if __name__ == '__main__':
-=======
-    def segment(self):
-
-        n = array.array('f')
-        s = array.array('f')
-        #n.append(466)
-        #n.append(500)
-        n.append(100)
-        n.append(600)
-        n.append(566)
-        n.append(600)
-        n.append(666)
-
-        if pixels < 1000000:
-            s.append(1.7)
-            s.append(2.7)
-            s.append(3.3)
-            s.append(3.9)
-            s.append(4.9)
-
-        elif pixels < 7000000:
-
-            s.append(2.275 - 1.5 + 0.0000009166667*pixels + 0.0000000000001083333*pow(pixels,2))
-            s.append(2.275 - 1 + 0.0000009166667*pixels + 0.0000000000001083333*pow(pixels,2))
-            s.append(2.275 + 0.0000009166667*pixels + 0.0000000000001083333*pow(pixels,2))
-            s.append(2.275 + 1 + 0.0000009166667*pixels + 0.0000000000001083333*pow(pixels,2))
-            s.append(2.275 + 1.5 + 0.0000009166667*pixels + 0.0000000000001083333*pow(pixels,2))
-
-        elif pixels > 7000000:
-            #s.append(10)
-            #s.append(13)
-            s.append(18)
-            s.append(8)
-            s.append(14)
-            s.append(15)
-            s.append(18)
-
-
-        for i in range(0,2):
-            #numSegments = 566
-            #mySigma = 6
-            out_file = str(n[i])+'seg_sigma'+str(s[i])
-
-            self.newIm = self.im;
-            cv2.imwrite("/home/madison/Documents/41x/IMG_SET6/" + out_file +"_origin.jpg", self.newIm)
-
-
-            # apply SLIC and extract (approximately) the supplied number of segments
-            segments = slic(self.im, n_segments=n[i], sigma=s[i])
-
-            b = segments.tolist() # nested lists with same data, indices
-
-            with open('/home/madison/Documents/41x/IMG_SET6/' + out_file +'.json', 'w') as outfile:
-            	    json.dump(b, outfile, indent=2)
-
-            # show the output of SLIC
-            fig = plt.figure("Superpixels -- %d segments" % (n[i]))
-            ax = fig.add_subplot(1, 1, 1)
-            self.newIm = mark_boundaries(self.im, segments, color=(52, 205, 195)) # fn normalises img bw 1 and 0 apparently
-            #ax.imshow(self.im)
-            plt.axis("off")
-            #cv2.waitKey(0)
-
-            self.newIm = (self.newIm * 255.0).astype('u1')
-            #cv2.imshow("after astype", self.newIm)
-            cv2.imwrite("/home/madison/Documents/41x/IMG_SET6/" + out_file +".jpg", self.newIm)
-            #cv2.waitKey(0)
-
->>>>>>> upstream/master
 
     parser = argparse.ArgumentParser()
     parser.add_argument('img_path', help="path to image to segment")
@@ -146,7 +75,6 @@ if __name__ == '__main__':
     parser.add_argument('--sigma', type=int, help="width of gaussian smoothing", default=3)
     args = parser.parse_args()
 
-<<<<<<< HEAD
     img_file = args.img_path + args.img_name + ".JPG"
 
     im = cv2.imread(img_file)[::args.dsy,::args.dsx]
@@ -154,40 +82,3 @@ if __name__ == '__main__':
 
     postprocessor = PostProc(im)
     postprocessor.segment(args.out_path,args.img_name,args.n_segments,args.sigma)
-=======
-def test():
-
-    print 'Number of arguments:', len(sys.argv), 'arguments.'
-    print 'Argument List:', str(sys.argv)
-
-    global pixels
-
-    cropStartX = int(sys.argv[1])
-    cropStartY = int(sys.argv[2])
-    cropWidth = int(sys.argv[3])
-    cropHeight = int(sys.argv[4])
-    #filepath = sys.argv[5]
-
-    x1 = cropStartX
-    x2 = cropStartX + cropWidth
-
-    y1 = cropStartY
-    y2 = cropStartY + cropHeight
-
-    pixels = cropWidth*cropHeight
-    #s3 = 13.46359 + (2.195932 - 13.46359)/(1 + pow(pixels/2724264.0,2.523085))
-    s3 = 2.275 + 0.0000009166667*pixels + 0.0000000000001083333*pow(pixels,2)
-    print s3
-
-    filepath = "/home/madison/Documents/41x/IMG_1144.jpg"
-    im = cv2.imread(filepath)
-    im = im[y1:y2,x1:x2,:] # NOTE: its img[y: y + h, x: x + w]
-
-    newIm = cv2.imread(filepath)
-    newIm = newIm[y1:y2,x1:x2,:]
-
-    postprocessor = PostProc(im)
-    postprocessor.segment()
-
-test()
->>>>>>> upstream/master
