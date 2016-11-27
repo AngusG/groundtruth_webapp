@@ -15,11 +15,11 @@
 * apt-get install nodejs
 * 5. Get npm
 * apt-get install npm
-* 6. Get python developer
+* 6. Get python developer (*What python version are you using?*)
 * apt-get install python-dev
 * apt-get install libpq-dev python-dev
 * 7. Get Flask
-* apt-get install Flask
+* apt-get install Flask - (This didn't work, also is there a particular version we need?)
 * 8. Get bower
 * npm install -g bower
 * 9. Get mysql-server
